@@ -10,4 +10,14 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    // Production optimization
+    minify: 'terser',
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true,
+      },
+    },
+  },
 })

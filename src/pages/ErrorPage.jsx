@@ -1,43 +1,21 @@
-import { NavLink, useNavigate, useRouteError } from "react-router-dom";
+import { Box, Button, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export const ErrorPage = () => {
-    const error = useRouteError();
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    function handleGoBack() {
-        // navigate("/");
-        navigate(-1);
-    }
+  return (
+    <Box textAlign="center" mt={10}>
+      <Typography variant="h3" gutterBottom>404</Typography>
+      <Typography variant="h6" gutterBottom>Page Not Found</Typography>
 
-    if (error.status === 404) {
-        return (
-            <section className="error-section">
-                <div id="error-text">
-                    <figure>
-                        <img
-                            src="https://cdn.dribbble.com/users/722246/screenshots/3066818/404-page.gif"
-                            alt="404 page"
-                        />
-                    </figure>
-                    <div className="text-center">
-                        <p className="p-a">
-                            . The page you were looking for could not be found
-                        </p>
-                        <p className="p-b">... Back to previous page</p>
-                    </div>
-                </div>
-                <div>
-                    <NavLink to="/" className="btn">
-                        Go Back To HomePage
-                    </NavLink>
-                    <button className="btn" onClick={handleGoBack}>
-                        Go Back
-                    </button>
-                </div>
-            </section>
-        );
-    }
-    console.log(error);
-
-    return <h1> The page you are looking does not exist</h1>;
-}
+      <Button
+        variant="contained"
+        sx={{ mt: 3 }}
+        onClick={() => navigate("/")}
+      >
+        Go to Home
+      </Button>
+    </Box>
+  );
+};

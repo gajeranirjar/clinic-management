@@ -1,23 +1,27 @@
 import { Outlet, useNavigation } from "react-router-dom";
-import { Footer } from "./Footer"
-import { Header } from "./Header"
-import Loading  from "./Loading";
-import { Box } from "@mui/material";
-
+import { Box, Container } from "@mui/material";
+import { Header } from "./Header";
+import { Footer } from "./Footer";
+import Loading from "./Loading";
 
 const AppLayout = () => {
-    const navigate = useNavigation();
-    if (navigate.state === "loading") return <Loading />
+  const navigation = useNavigation();
 
-    return (
-        <Box display="flex" flexDirection="column" minHeight="100vh">
-            <Header />
-            <Box component="main" flexGrow={1} p={2}>
-                <Outlet />
-            </Box>
-            <Footer />
-        </Box>
-    )
-}
+  if (navigation.state === "loading") return <Loading />;
+
+  return (
+    <Box display="flex" flexDirection="column" minHeight="100vh">
+      <Header />
+
+      <Container component="main" sx={{ flexGrow: 1, py: 3 }}>
+        <Outlet />
+      </Container>
+
+      <Footer />
+    </Box>
+  );
+};
 
 export default AppLayout;
+
+

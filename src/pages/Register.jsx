@@ -1,81 +1,87 @@
 import { useState } from "react";
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  MenuItem,
-} from "@mui/material";
+import { Box, Button, TextField, Typography, Paper, Alert, CircularProgress, } from "@mui/material";
 import { registerUser } from "../api/auth";
 import { useNavigate } from "react-router-dom";
 
 export const Register = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [role, setRole] = useState("");
-  const [error, setError] = useState("");
-
   const navigate = useNavigate();
+  const [formValues, setFormValues] = useState({ email: "", password: "", });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleFormValues = (event) => {
+    setFormValues({
+      ...formValues,
+      [event.target.name]: event.target.value,
+    });
+  };
 
   const handleRegister = async () => {
+    setErrorMessage("");
+
+    if (!formValues.email || formValues.password.length < 6) {
+      setErrorMessage("Valid email and password (minimum 6 characters) required");
+      return;
+    }
+
     try {
-      await registerUser(email, password, role);
+      setIsSubmitting(true);
+      await registerUser(
+        formValues.email,
+        formValues.password
+      );
       navigate("/login");
-    } catch (err) {
-      setError(err.message);
+    } catch (error) {
+      setErrorMessage(error.message);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <Box display="flex" justifyContent="center" mt={8}>
-      <Paper sx={{ p: 4, width: 380 }}>
-        <Typography variant="h5" mb={2}>
-          Register
-        </Typography>
+      <Paper sx={{ p: { xs: 2, sm: 4 } , width: 380, height: 380 }} >
+        <Typography variant="h5" gutterBottom>Register</Typography>
+
+        {errorMessage && (
+          <Alert severity="error" sx={{ mb: 2 }} >
+            {errorMessage}
+          </Alert>
+        )}
 
         <TextField
+          name="email"
           label="Email"
+          autoComplete="off"
           fullWidth
           margin="normal"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          value={formValues.email}
+          onChange={handleFormValues}
         />
 
         <TextField
+          name="password"
           label="Password"
+          autoComplete="off"
           type="password"
           fullWidth
           margin="normal"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          value={formValues.password}
+          onChange={handleFormValues}
         />
-
-        <TextField
-          select
-          label="Role"
-          fullWidth
-          margin="normal"
-          value={role}
-          onChange={(e) => setRole(e.target.value)}
-        >
-          <MenuItem value="doctor">Doctor</MenuItem>
-          <MenuItem value="receptionist">Receptionist</MenuItem>
-        </TextField>
-
-        {error && (
-          <Typography color="error" variant="body2">
-            {error}
-          </Typography>
-        )}
 
         <Button
           variant="contained"
           fullWidth
-          sx={{ mt: 2 }}
+          sx={{ mt: 4 }}
+          disabled={isSubmitting}
           onClick={handleRegister}
         >
-          Register
+          {isSubmitting ? (
+            <CircularProgress size={22} />
+          ) : (
+            "Register"
+          )}
         </Button>
       </Paper>
     </Box>

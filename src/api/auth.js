@@ -1,47 +1,56 @@
-// src/api/auth.js
-import { auth, db } from "../firebase.js";
-import { signInWithEmailAndPassword , createUserWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc , setDoc } from "firebase/firestore";
+import { auth, db } from "../firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc, getDoc, Timestamp } from "firebase/firestore";
 
-// REGISTER
-export const registerUser = async (email, password, role) => {
-  const userCredential = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-
-  const user = userCredential.user;
-
-  // Save role in Firestore
-  await setDoc(doc(db, "users", user.uid), {
-    email,
-    role,
-  });
-
-  return user;
-};
-
-
-export const loginUser = async (email, password) => {
-  // 1. Firebase Authentication
-  const userCredential = await signInWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
-
-  const user = userCredential.user;
-
-  // 2. Fetch role from Firestore
-  const userDoc = await getDoc(doc(db, "users", user.uid));
-
-  if (!userDoc.exists()) {
-    throw new Error("User role not found");
+export const registerUser = async (email, password) => {
+  if (!email || !password) {
+    throw new Error("Email and password are required");
   }
 
-  return {
-    uid: user.uid,
-    ...userDoc.data(), // email, role
-  };
-};
+  let credential;
+  try {
+    credential = await createUserWithEmailAndPassword(auth, email, password);
+
+    await setDoc(doc(db, "users", credential.user.uid), {
+      email,
+      role: "user",
+      isActive : true,
+      createdAt: Timestamp.now(),
+    });
+  } catch (error) {
+    console.log("👌 ~ registerUser ~ error:", error)
+    if (credential?.user) {
+      await credential.user.delete();
+    }
+
+    if (error.code === "auth/email-already-in-use") {
+      throw new Error("This email is already registered");
+    }
+
+    throw new Error(error.message || "Registration failed");
+  }
+}
+
+export const loginUser = async (email, password) => {
+  if (!email || !password) {
+    throw new Error("Email and password are required");
+  }
+
+  try {
+    const credential = await signInWithEmailAndPassword(auth, email, password);
+
+    const userDoc = await getDoc(doc(db, "users", credential.user.uid));
+    if (!userDoc.exists()) {
+      throw new Error("User profile not found");
+    }
+
+    return {
+      uid: credential.user.uid,
+      email: credential.user.email,
+      role: userDoc.data()?.role || "user",
+    };
+  } catch (error) {
+    console.log("👌 ~ loginUser ~ error:", error)
+    throw new Error(error.message || "Invalid email or password");
+  }
+}
