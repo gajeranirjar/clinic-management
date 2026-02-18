@@ -3,13 +3,13 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: 'AIzaSyBJhjTBLU4thNOgxJ07zaN0VmUU2SA4QRI',
+  authDomain: 'clinic-management-18.firebaseapp.com',
+  projectId: 'clinic-management-18',
+  storageBucket: 'clinic-management-18.firebasestorage.app',
+  messagingSenderId: '139830302828',
+  appId: '1:139830302828:web:40f1933c7b491ec2576049',
+  measurementId: 'G-LX487HZ22H',
 };
 
 const app = initializeApp(firebaseConfig);
